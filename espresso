@@ -1,0 +1,56 @@
+#!/bin/zsh
+args=()
+display_msg=""
+
+while [[ "$1" == -* ]]; do
+    case "$1" in
+        -d|--display)
+            args+=("-d")
+            display_msg=" (display forced on)"
+            shift ;;
+        -h|--help)
+            echo "Usage: espresso [-d|--display] [hours minutes | stop | status]"
+            exit 0 ;;
+        *)
+            echo "Error: Unknown flag $1"
+            exit 1 ;;
+    esac
+done
+
+case "$1" in
+    stop)
+        pkill -u "$USER" -x caffeinate && echo "Sleep prevention stopped." || echo "No active process found."
+        exit 0 ;;
+    status)
+        pgrep -u "$USER" -x caffeinate >/dev/null 2>&1 && echo "Status: Active" || echo "Status: Inactive"
+        exit 0 ;;
+esac
+
+if pgrep -u "$USER" -x caffeinate >/dev/null 2>&1; then
+    echo "Error: A caffeinate process is already running under this user account."
+    exit 1
+fi
+
+hours=$1
+minutes=$2
+[[ -z "$hours" ]] && read -r "hours?Enter hours: "
+[[ -z "$minutes" ]] && read -r "minutes?Enter minutes: "
+hours=${hours:-0}
+minutes=${minutes:-0}
+
+if [[ ! "$hours" =~ ^[0-9]+$ || ! "$minutes" =~ ^[0-9]+$ || "$hours" -gt 8760 || "$minutes" -gt 59 ]]; then
+    echo "Error: Valid integers required (hours <= 8760, minutes <= 59)."
+    exit 1
+fi
+
+total_seconds=$(( (hours * 3600) + (minutes * 60) ))
+
+if (( total_seconds > 0 )); then
+    echo "System awake active${display_msg} for ${hours}h ${minutes}m."
+    args+=("-t" "$total_seconds")
+    caffeinate "${args[@]}" >/dev/null 2>&1 &!
+    exit 0
+fi
+
+echo "Error: Duration must be greater than zero."
+exit 1
