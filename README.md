@@ -6,7 +6,7 @@ A simple, easy-to-use stateless macOS zsh wrapper for caffeinate.
 2. Navigate to the save directory in your terminal and run: mv espresso ~/.local/bin/
 3. Run the following command to view your .zshrc: cat ~/.zshrc
 4. Check that the terminal output includes: export PATH="$HOME/.local/bin:$PATH"
-5. If it does not,run: echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+5. If it does not, run: echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
 
 ## Usage
 espresso [-d|--display] [hours minutes | stop | status]
