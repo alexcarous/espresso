@@ -1,5 +1,5 @@
 # espresso
-A stateless macOS zsh wrapper for caffeinate.
+A simple, easy-to-use stateless macOS zsh wrapper for caffeinate.
 
 ## Getting Started
 1. Download the espresso script.
