@@ -27,13 +27,34 @@ case "$1" in
 esac
 
 if pgrep -u "$USER" -x caffeinate >/dev/null 2>&1; then
-    echo "Error: A caffeinate process is already running under this user account."
+    pid=$(pgrep -u "$USER" -x caffeinate | head -n 1)
+    total_sec=$(ps -p "$pid" -o args= | grep -oE '\-t\s+[0-9]+' | awk '{print $2}')
+    elapsed_sec=$(ps -p "$pid" -o etimes= | tr -d ' ')
+
+    if [[ -n "$total_sec" && "$total_sec" =~ ^[0-9]+$ && -n "$elapsed_sec" && "$elapsed_sec" =~ ^[0-9]+$ ]]; then
+        rem_sec=$(( total_sec - elapsed_sec ))
+        if (( rem_sec < 0 )); then
+            rem_sec=0
+        fi
+        rem_hours=$(( rem_sec / 3600 ))
+        rem_minutes=$(( (rem_sec % 3600) / 60 ))
+        time_string="${rem_hours} hours and ${rem_minutes} minutes"
+        
+        echo "To run espresso, either wait $time_string or run the command \"pkill caffeinate\" to kill the existing process now."
+    else
+        echo "To run espresso, you must first run the command \"pkill caffeinate\" to kill the existing process now."
+    fi
     exit 1
 fi
 
 hours=$1
 minutes=$2
-[[ -z "$hours" ]] && read -r "hours?Enter hours: "
+
+if [[ -z "$hours" ]]; then
+    echo "Welcome to espresso. ☕️"
+    echo ""
+    read -r "hours?Enter hours: "
+fi
 [[ -z "$minutes" ]] && read -r "minutes?Enter minutes: "
 hours=${hours:-0}
 minutes=${minutes:-0}
