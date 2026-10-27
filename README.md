@@ -1,4 +1,6 @@
 # espresso
+
+![espresso illustration](docs/assets/espresso.svg)
 An open source, stateless macOS zsh wrapper for caffeinate.
 
 ## Getting Started
