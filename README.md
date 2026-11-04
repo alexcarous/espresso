@@ -13,7 +13,7 @@ An open source, stateless macOS zsh wrapper for caffeinate.
 ## Usage
 espresso [-d|--display] [hours minutes | stop | status]
 
-* **Timed Prevention**: "espresso 2 30" prevents system sleep for 2 hours and 30 minutes. If duration arguments are completely omitted, the script initiates interactive prompts to collect input.
+* **Timed Prevention**: "espresso 2 30" prevents system sleep for 2 hours and 30 minutes. If duration arguments are completely omitted, the script asks for both values in one prompt: `Enter duration (hours minutes): `. Enter `2 30` for 2 hours and 30 minutes. If only hours are supplied (e.g., `espresso 2`), minutes default to zero.
 * **Display Control**: Add "-d" or "--display" (e.g., "espresso -d 1 0") to force the display monitor to remain powered on alongside the system background processes.
 * **espresso status**: Audits the system to verify whether an active user-owned sleep prevention process is running.
 * **espresso stop**: Immediately terminates the active background "caffeinate" process utilizing "pkill". Note: does not kill "caffeinate" processes started outside of espresso.

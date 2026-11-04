@@ -53,9 +53,8 @@ minutes=$2
 if [[ -z "$hours" ]]; then
     echo "Welcome to espresso. ☕️"
     echo ""
-    read -r "hours?Enter hours: "
+    read -r "hours?Enter duration (hours minutes): " minutes
 fi
-[[ -z "$minutes" ]] && read -r "minutes?Enter minutes: "
 hours=${hours:-0}
 minutes=${minutes:-0}
 
