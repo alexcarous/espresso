@@ -29,16 +29,42 @@ esac
 if pgrep -u "$USER" -x caffeinate >/dev/null 2>&1; then
     pid=$(pgrep -u "$USER" -x caffeinate | head -n 1)
     total_sec=$(ps -p "$pid" -o args= | grep -oE '\-t\s+[0-9]+' | awk '{print $2}')
-    elapsed_sec=$(ps -p "$pid" -o etimes= | tr -d ' ')
+    etime_str=$(ps -p "$pid" -o etime= | tr -d ' ')
 
-    if [[ -n "$total_sec" && "$total_sec" =~ ^[0-9]+$ && -n "$elapsed_sec" && "$elapsed_sec" =~ ^[0-9]+$ ]]; then
-        rem_sec=$(( total_sec - elapsed_sec ))
+    elapsed_sec=""
+    if [[ -n "$etime_str" ]]; then
+        if [[ "$etime_str" == *-* ]]; then
+            days="${etime_str%%-*}"
+            time_part="${etime_str#*-}"
+        else
+            days=0
+            time_part="$etime_str"
+        fi
+
+        IFS=':' read -r -A parts <<< "$time_part"
+        d=$(( 10#${days} ))
+
+        if (( ${#parts} == 2 )); then
+            m=$(( 10#${parts[1]} ))
+            s=$(( 10#${parts[2]} ))
+            elapsed_sec=$(( d * 86400 + m * 60 + s ))
+        elif (( ${#parts} == 3 )); then
+            h=$(( 10#${parts[1]} ))
+            m=$(( 10#${parts[2]} ))
+            s=$(( 10#${parts[3]} ))
+            elapsed_sec=$(( d * 86400 + h * 3600 + m * 60 + s ))
+        fi
+    fi
+
+    if [[ -n "$total_sec" && "$total_sec" =~ ^[0-9]+$ && -n "$elapsed_sec" ]]; then
+        rem_sec=$(( 10#$total_sec - elapsed_sec ))
         if (( rem_sec < 0 )); then
             rem_sec=0
         fi
         rem_hours=$(( rem_sec / 3600 ))
         rem_minutes=$(( (rem_sec % 3600) / 60 ))
-        time_string="${rem_hours} hours and ${rem_minutes} minutes"
+        rem_seconds=$(( rem_sec % 60 ))
+        time_string="${rem_hours} hours, ${rem_minutes} minutes, and ${rem_seconds} seconds"
         
         echo "To run espresso, either wait $time_string or run the command \"pkill caffeinate\" to kill the existing process now."
     else
