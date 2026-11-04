@@ -66,9 +66,9 @@ if pgrep -u "$USER" -x caffeinate >/dev/null 2>&1; then
         rem_seconds=$(( rem_sec % 60 ))
         time_string="${rem_hours} hours, ${rem_minutes} minutes, and ${rem_seconds} seconds"
         
-        echo "To run espresso, either wait $time_string or run the command \"pkill caffeinate\" to kill the existing process now."
+        echo "To run espresso, either wait $time_string or run the command \"espresso stop\" to stop sleep prevention now."
     else
-        echo "To run espresso, you must first run the command \"pkill caffeinate\" to kill the existing process now."
+        echo "To run espresso, you must first run the command \"espresso stop\" to stop sleep prevention now."
     fi
     exit 1
 fi
